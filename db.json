@@ -1,0 +1,38 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "email": "admin@example.com",
+      "password": "admin123",
+      "role": "admin"
+    },
+    {
+      "id": "2",
+      "email": "user@example.com",
+      "password": "user123",
+      "role": "user"
+    },
+    {
+      "id": "3",
+      "email": "asavant151@gmail.com",
+      "password": "savan@2004",
+      "role": "user"
+    }
+  ],
+  "tasks": [
+    {
+      "name": "Coding",
+      "description": "This is task 4",
+      "status": "pending",
+      "assignedTo": "user@example.com",
+      "id": "1"
+    },
+    {
+      "id": "5e57",
+      "name": "Reading",
+      "description": "1 hrs reading sport book",
+      "status": "pending",
+      "assignedTo": "asavant151@gmail.com"
+    }
+  ]
+}

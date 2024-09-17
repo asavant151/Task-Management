@@ -1,0 +1,194 @@
+.task-section {
+    background-color: #8F3F65;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}
+
+.task-item {
+  display: flex;
+  justify-content: space-between;
+  background-color: #22272b;
+  padding: 10px 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+.fade-in {
+  opacity: 1;
+}
+
+.task-list {
+  list-style: none;
+}
+
+.task {
+  font-size: 14px;
+  font-weight: 500;
+  padding: 0 10px;
+  position: relative;
+}
+
+.task::before {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  height: 2px;
+  width: 0;
+  transition: width 0.7s;
+  background-color: rgb(248, 0, 0);
+}
+
+.task.checked-task::before {
+  width: 100%;
+}
+
+.task.checked-task {
+  color: rgba(0, 0, 0, 0.521);
+}
+
+.icons {
+  display: flex;
+  gap: 15px;
+  align-self: center;
+}
+
+.check,
+.delete {
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.check {
+  color: white;
+}
+
+.delete {
+  color: red;
+}
+
+.task-done {
+  text-decoration: line-through;
+}
+
+.task-heading {
+  display: block;
+  z-index: 0;
+  margin: 0;
+  padding: 6px 8px 6px 12px;
+  overflow: hidden;
+  background-color: transparent;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  white-space: normal;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+
+.task-bg {
+  display: flex;
+  position: relative;
+  box-sizing: border-box;
+  flex-basis: 272px;
+  flex-direction: column;
+  flex-grow: 0;
+  flex-shrink: 0;
+  align-self: start;
+  justify-content: space-between;
+  width: 272px;
+  max-height: 100%;
+  padding-bottom: 8px;
+  border-radius: 12px;
+  background-color: #101204;
+  color: #ffffff;
+  vertical-align: top;
+  white-space: normal;
+  scroll-margin: 8px;
+}
+
+.add-task {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 8px 0;
+  column-gap: 4px;
+
+  .add-task-btn {
+    display: flex;
+    flex-grow: 1;
+    align-items: center;
+    justify-content: flex-start;
+    margin: 0;
+    padding: 6px 12px 6px 8px;
+    border-radius: 8px;
+    background-color: transparent;
+    color: #9fadbc;
+    text-decoration: none;
+    -webkit-user-select: none;
+    user-select: none;
+
+    &:hover {
+      background-color: #091e4224;
+      color: #b6c2cf;
+    }
+
+    .pluse-icon {
+      font-size: 14px;
+      flex-shrink: 0;
+      margin-right: 8px;
+    }
+  }
+}
+
+.add-card-box {
+  height: auto;
+  width: 100%;
+  min-height: 36px;
+  max-height: 160px;
+  margin: 0;
+  padding: 8px 12px;
+  overflow: hidden;
+  overflow-y: auto;
+  border: none;
+  border-radius: 8px;
+  color: #ffffff;
+  background-color: #22272b;
+  resize: none;
+  overflow-wrap: break-word;
+}
+
+.add-btn {
+  border: none;
+  background-color: #579dff;
+  color: #1d2125;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  padding: 6px 12px;
+  border-radius: 3px;
+  cursor: pointer;
+  box-shadow: none;
+  font-weight: 500;
+  transition-duration: 85ms;
+  transition-timing-function: ease;
+}
+
+.close-btn {
+  border: none;
+  background-color: transparent;
+  box-shadow: none;
+  padding: 6px;
+  font-size: 14px;
+  color: #ffffff;
+}
+
+@media (max-width: 768px) {
+    .task-bg {
+        width: 100%;
+    }
+}
