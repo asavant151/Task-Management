@@ -16,6 +16,7 @@ Smooth popups using Bootstrap's JavaScript classes
 React JS - Frontend framework
 Redux Toolkit - State management
 Formik & Yup - Form handling and validation
+Firebase - Authcation and Task Crud implement
 Axios - API requests
 Bootstrap - Responsive design and popups
 React Router - Client-side routing

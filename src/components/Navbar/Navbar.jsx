@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../../firebase";
-import "./Navbar.scss"
+import "./Navbar.scss";
 
 const Navbar = () => {
   const [user, setUser] = useState(null);
@@ -29,10 +29,15 @@ const Navbar = () => {
     }
   };
   return (
-    <nav className="navbar navbar-expand-lg bg-light">
+    <nav className="navbar navbar-expand-lg">
       <div className="container-fluid">
         <Link to={"/"} className="navbar-brand">
-          Task Manager
+          <img
+            src="./images/logo.Pw5"
+            alt="logo"
+            className="img-fluid"
+            width={80}
+          />
         </Link>
         <button
           className="navbar-toggler"
@@ -49,7 +54,15 @@ const Navbar = () => {
           <ul className="navbar-nav ms-auto align-items-center">
             {user ? (
               <>
-                <li className="nav-item me-2">
+                <li className="nav-item me-4">
+                  <Link
+                    to="/tasks"
+                    className="text-decoration-none text-white fs-6 fw-semibold"
+                  >
+                    Tasks
+                  </Link>
+                </li>
+                <li className="nav-item">
                   <div className="dropdown">
                     <button
                       className="dropdown-toggle"
@@ -73,22 +86,13 @@ const Navbar = () => {
                     </ul>
                   </div>
                 </li>
-                <li className="nav-item me-2">
-                  <Link
-                    to="/tasks"
-                    className="text-decoration-none text-black fs-6 fw-semibold"
-                  >
-                    Tasks
-                  </Link>
-                </li>
-                <li className="nav-item me-2"></li>
               </>
             ) : (
               <>
                 <li className="nav-item me-2">
                   <Link
                     to="/login"
-                    className="text-decoration-none text-black fs-6 fw-semibold"
+                    className="text-decoration-none text-white fs-6 fw-semibold"
                   >
                     Login
                   </Link>
@@ -96,7 +100,7 @@ const Navbar = () => {
                 <li className="nav-item me-2">
                   <Link
                     to="/register"
-                    className="text-decoration-none text-black fs-6 fw-semibold"
+                    className="text-decoration-none text-white fs-6 fw-semibold"
                   >
                     Register
                   </Link>

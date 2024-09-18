@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  onSnapshot,
+} from "firebase/firestore";
 import { db } from "../../firebase";
 import { toast } from "react-hot-toast";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
@@ -18,6 +25,7 @@ const TaskList = () => {
   });
   const [newTaskText, setNewTaskText] = useState("");
 
+  // Fetch tasks in real-time from Firestore
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "tasks"), (snapshot) => {
       const taskData = { todo: [], doing: [], done: [] };
@@ -31,6 +39,7 @@ const TaskList = () => {
     return () => unsubscribe();
   }, []);
 
+  // Handle task creation
   const createTask = async (listName) => {
     if (!newTaskText.trim()) {
       toast.error("Task name cannot be empty.");
@@ -49,6 +58,7 @@ const TaskList = () => {
     }
   };
 
+  // Handle task update
   const updateTask = async (taskId, newText) => {
     try {
       const taskDoc = doc(db, "tasks", taskId);
@@ -59,6 +69,7 @@ const TaskList = () => {
     }
   };
 
+  // Handle task deletion
   const deleteTask = async (taskId) => {
     try {
       await deleteDoc(doc(db, "tasks", taskId));
@@ -68,6 +79,7 @@ const TaskList = () => {
     }
   };
 
+  // Handle input visibility for adding new tasks
   const handleAddClick = (listName) => {
     setShowInput({ ...showInput, [listName]: true });
   };
@@ -77,24 +89,33 @@ const TaskList = () => {
     setNewTaskText("");
   };
 
+  // Handle drag end
   const handleOnDragEnd = async (result) => {
+    if (!result.destination) return;
+
     const { source, destination } = result;
-    if (!destination) return;
+    if (
+      source.droppableId === destination.droppableId &&
+      source.index === destination.index
+    ) {
+      return;
+    }
 
     const sourceStatus = source.droppableId;
     const destinationStatus = destination.droppableId;
 
-    if (sourceStatus === destinationStatus && source.index === destination.index) {
-      return;
-    }
-
+    // Clone the task that is being moved
     const [movedTask] = tasks[sourceStatus].splice(source.index, 1);
+
+    // Update the task's status
     movedTask.status = destinationStatus;
 
+    // Update Firestore
     try {
       const taskDoc = doc(db, "tasks", movedTask.id);
       await updateDoc(taskDoc, { status: destinationStatus });
 
+      // Insert task into the new list
       const updatedTasks = {
         ...tasks,
         [destinationStatus]: [
@@ -114,88 +135,104 @@ const TaskList = () => {
   return (
     <div className="task-section">
       <DragDropContext onDragEnd={handleOnDragEnd}>
-        <div className="task-list mx-md-5 mx-0 row align-items-center justify-content-lg-start justify-content-center">
+        <ul className="task-list mx-md-5 mx-0 row">
           {["todo", "doing", "done"].map((status) => (
-            <Droppable key={status} droppableId={status}>
-              {(provided) => (
-                <div
-                  className="col-xl-2 col-lg-4 col-md-6 col-12 mt-5 mb-md-0 mb-4 me-lg-4 me-0 task-bg"
-                  ref={provided.innerRef}
-                  {...provided.droppableProps}
-                >
-                  <h2 className="task-heading mb-3 mt-2 ms-2">
-                    {status === "todo" ? "To Do" : status === "doing" ? "In Progress" : "Completed"}
-                  </h2>
-
-                  {tasks[status].map((task, index) => (
-                    <Draggable key={task.id} draggableId={task.id} index={index}>
-                      {(provided) => (
-                        <div
-                          className="task-item fade-in"
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                        >
-                          <span className="task">{task.text}</span>
-                          <div className="icons">
-                            <i
-                              className="fa-solid fa-pen check"
-                              onClick={() => {
-                                const newText = prompt("Edit task:", task.text);
-                                if (newText) updateTask(task.id, newText);
-                              }}
-                            ></i>
-                            <i
-                              className="fa-solid fa-trash-can delete"
-                              onClick={() => deleteTask(task.id)}
-                            ></i>
-                          </div>
-                        </div>
-                      )}
-                    </Draggable>
-                  ))}
-                  {provided.placeholder}
-
-                  <div className="add-task">
-                    {showInput[status] ? (
-                      <div>
-                        <textarea
-                          className="add-card-box"
-                          placeholder="Enter a name for this card...."
-                          value={newTaskText}
-                          onChange={(e) => setNewTaskText(e.target.value)}
-                        ></textarea>
-                        <button
-                          className="add-btn mt-2"
-                          onClick={() => {
-                            createTask(status);
-                            setShowInput({ ...showInput, [status]: false });
-                          }}
-                        >
-                          Add card
-                        </button>
-                        <button
-                          className="close-btn mt-2 ms-2"
-                          onClick={() => handleCloseClick(status)}
-                        >
-                          <i className="fa-solid fa-xmark"></i>
-                        </button>
-                      </div>
-                    ) : (
-                      <button
-                        type="button"
-                        className="add-task-btn"
-                        onClick={() => handleAddClick(status)}
+            <li
+              className="col-xl-2 col-lg-4 col-md-6 col-12 mt-5 mb-md-0 mb-4 me-lg-4 me-0 task-bg"
+              key={status}
+            >
+              <h2 className="task-heading mb-3 mt-2 ms-2">
+                {status === "todo"
+                  ? "To Do"
+                  : status === "doing"
+                  ? "In Progress"
+                  : "Completed"}
+              </h2>
+              <Droppable droppableId={status}>
+                {(provided) => (
+                  <div
+                    {...provided.droppableProps}
+                    ref={provided.innerRef}
+                    className="task-droppable"
+                  >
+                    {tasks[status].map((task, index) => (
+                      <Draggable
+                        key={task.id}
+                        draggableId={task.id}
+                        index={index}
                       >
-                        <i className="fa-solid fa-plus pluse-icon"></i> Add a card
-                      </button>
-                    )}
+                        {(provided) => (
+                          <div
+                            className="task-item fade-in"
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                          >
+                            <span className="task">{task.text}</span>
+                            <div className="icons">
+                              <i
+                                className="fa-solid fa-pen check"
+                                onClick={() => {
+                                  const newText = prompt(
+                                    "Edit task:",
+                                    task.text
+                                  );
+                                  if (newText) updateTask(task.id, newText);
+                                }}
+                              ></i>
+                              <i
+                                className="fa-solid fa-trash-can delete"
+                                onClick={() => deleteTask(task.id)}
+                              ></i>
+                            </div>
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
                   </div>
-                </div>
-              )}
-            </Droppable>
+                )}
+              </Droppable>
+
+              {/* Add new task */}
+              <div className="add-task">
+                {showInput[status] ? (
+                  <div>
+                    <textarea
+                      className="add-card-box"
+                      placeholder="Enter a name for this card...."
+                      value={newTaskText}
+                      onChange={(e) => setNewTaskText(e.target.value)}
+                    ></textarea>
+                    <button
+                      className="add-btn mt-2"
+                      onClick={() => {
+                        createTask(status);
+                        setShowInput({ ...showInput, [status]: false });
+                      }}
+                    >
+                      Add card
+                    </button>
+                    <button
+                      className="close-btn mt-2 ms-2"
+                      onClick={() => handleCloseClick(status)}
+                    >
+                      <i className="fa-solid fa-xmark"></i>
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    className="add-task-btn"
+                    onClick={() => handleAddClick(status)}
+                  >
+                    <i className="fa-solid fa-plus pluse-icon"></i> Add a card
+                  </button>
+                )}
+              </div>
+            </li>
           ))}
-        </div>
+        </ul>
       </DragDropContext>
     </div>
   );
