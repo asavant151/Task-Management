@@ -1,7 +1,6 @@
 .task-section {
     background-color: #8F3F65;
-    position: absolute;
-    height: 100%;
+    height: 100vh;
     width: 100%;
 }
 
@@ -102,7 +101,8 @@
   justify-content: space-between;
   width: 272px;
   max-height: 100%;
-  padding-bottom: 8px;
+  padding-top: 8px;
+  padding-bottom: 18px;
   border-radius: 12px;
   background-color: #101204;
   color: #ffffff;

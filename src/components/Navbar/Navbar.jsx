@@ -1,23 +1,32 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { auth } from "../../firebase";
+import "./Navbar.scss"
 
 const Navbar = () => {
   const [user, setUser] = useState(null);
-  
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem("users"));
-    
-    if (storedUser) {
-      setUser(storedUser);
-    }
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) {
+        setUser(currentUser);
+      } else {
+        setUser(null);
+      }
+    });
+
+    return () => unsubscribe();
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem("users");
-    setUser(null);
-    navigate("/login");
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
   };
   return (
     <nav className="navbar navbar-expand-lg bg-light">
@@ -41,21 +50,29 @@ const Navbar = () => {
             {user ? (
               <>
                 <li className="nav-item me-2">
-                  <span className="text-black fs-6 fw-semibold">
-                    {user?.name?.charAt(0).toUpperCase()}
-                  </span>
+                  <div className="dropdown">
+                    <button
+                      className="dropdown-toggle"
+                      type="button"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                    >
+                      <span className="text-white fs-6 fw-semibold">
+                        {user?.email.charAt(0).toUpperCase()}
+                      </span>
+                    </button>
+                    <ul className="dropdown-menu">
+                      <li>
+                        <button
+                          onClick={handleLogout}
+                          className="btn btn-link text-black text-decoration-none fs-6 fw-semibold"
+                        >
+                          Logout
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
                 </li>
-                <li className="nav-item me-2">
-                  <button
-                    onClick={handleLogout}
-                    className="btn btn-link text-black text-decoration-none fs-6 fw-semibold"
-                  >
-                    Logout
-                  </button>
-                </li>
-              </>
-            ) : (
-              <>
                 <li className="nav-item me-2">
                   <Link
                     to="/tasks"
@@ -64,6 +81,10 @@ const Navbar = () => {
                     Tasks
                   </Link>
                 </li>
+                <li className="nav-item me-2"></li>
+              </>
+            ) : (
+              <>
                 <li className="nav-item me-2">
                   <Link
                     to="/login"

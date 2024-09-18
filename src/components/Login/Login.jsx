@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../firebase";
 import "./Login.scss";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -20,16 +22,18 @@ const Login = () => {
     setPasswordNotEmpty(password !== "");
   }, [password]);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    const users = JSON.parse(localStorage.getItem("users") || "[]");
-    const user = users.find((user) => user.email === email && user.password === password);
 
-    if (user) {
-      localStorage.setItem("authToken", "dummyToken");
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      console.log("User logged in:", user);
+
       toast.success("Login successful");
       navigate("/tasks");
-    } else {
+    } catch (error) {
+      console.error("Login error", error);
       toast.error("Invalid credentials or user not registered");
     }
   };

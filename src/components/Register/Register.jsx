@@ -1,6 +1,9 @@
 import React, { useState } from "react";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../firebase";
 import "./Register.scss";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -8,27 +11,24 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [role, setRole] = useState("");
+  const navigate = useNavigate();
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-
     if (password !== confirmPassword) {
       toast.error("Passwords do not match");
       return;
     }
-
-    const existingUsers = JSON.parse(localStorage.getItem("users") || "[]");
-
-    if (existingUsers.find((user) => user.email === email)) {
-      toast.error("Account already exists");
-      return;
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      console.log("User registered:", user);
+      toast.success("Registration successful");
+      navigate("/login");
+    } catch (error) {
+      console.error("Error during registration", error);
+      toast.error(error.message);
     }
-
-    const newUser = { name, email, password, role };
-    existingUsers.push(newUser);
-    localStorage.setItem("users", JSON.stringify(existingUsers));
-
-    toast.success("Registration successful");
   };
   return (
     <>
