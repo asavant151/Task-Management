@@ -7,6 +7,7 @@ import Register from "./components/Register/Register";
 import TaskList from "./pages/Tasks/TaskList";
 import Navbar from "./components/Navbar/Navbar";
 import Home from "./pages/Home/Home";
+import "./App.css";
 
 const App = () => {
   return (

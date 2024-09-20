@@ -33,7 +33,7 @@ const Register = () => {
   return (
     <>
       <section className="signup">
-        <div className="container">
+        <div className="containers">
           <div className="signup-content">
             <div className="signup-form">
               <h2 className="form-title">Sign up</h2>

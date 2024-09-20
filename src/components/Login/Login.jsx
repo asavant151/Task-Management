@@ -29,7 +29,6 @@ const Login = () => {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       console.log("User logged in:", user);
-
       toast.success("Login successful");
       navigate("/tasks");
     } catch (error) {
